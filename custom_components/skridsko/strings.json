@@ -1,0 +1,143 @@
+{
+  "config": {
+    "flow_title": "Skridsko ({count} observations)",
+    "step": {
+      "user": {
+        "title": "Skridsko ice observations – login",
+        "description": "The integration regularly checks your interest area on tur.skridsko.net for new ice observations and forwards them with images and map.\n\nPHPSESSID: log in to tur.skridsko.net in Chrome → F12 → Application → Cookies → tur.skridsko.net.",
+        "data": {
+          "phpsessid": "Login key (PHPSESSID)"
+        }
+      },
+      "delivery": {
+        "title": "Delivery",
+        "data": {
+          "email_enabled": "Send email",
+          "email_to": "To email address",
+          "email_service": "Send email via (notify service)",
+          "push_enabled": "Push notification to phone",
+          "push_services": "Phones",
+          "push_only_skateable": "Only push when ice is reported skateable",
+          "max_images": "Max images per alert",
+          "keepalive_min": "Check Skridsko – shortest interval",
+          "keepalive_max": "Check Skridsko – longest interval",
+          "smtp_user": "Gmail account that sends",
+          "smtp_password": "App password for that account",
+          "include_map": "Include map in email",
+          "use_email": "Also react instantly to Skridsko alert emails (optional)",
+          "imap_entry": "Mailbox (IMAP integration)"
+        },
+        "data_description": {
+          "email_to": "Empty = recipient configured in the notify service.",
+          "email_service": "E.g. an SMTP notify service. Images are embedded.",
+          "push_services": "Your mobile_app devices.",
+          "keepalive_min": "Each check is one view of the observation list, which both finds new observations and keeps the login alive. New random delay between shortest and longest, plus up to 40 seconds.",
+          "smtp_user": "Only used with built-in Gmail sending. Create an app password at myaccount.google.com → Security → App passwords.",
+          "include_map": "Map image from Kartverket with a marker, plus links to Norgeskart and Google Maps.",
+          "use_email": "Without email, new observations arrive with the next check (max ~20 min). With email they arrive within seconds. Requires the IMAP integration."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Skridsko login has expired",
+        "description": "Log in to tur.skridsko.net again and paste the new key. {pending} alert(s) are queued and will be sent once login works.",
+        "data": {
+          "phpsessid": "New PHPSESSID"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The key does not give access. Log in to tur.skridsko.net and copy PHPSESSID again.",
+      "cannot_connect": "Could not reach tur.skridsko.net.",
+      "email_service_required": "Choose a notify service for email.",
+      "push_device_required": "Choose at least one phone.",
+      "max_below_min": "Longest interval must be at least the shortest.",
+      "smtp_incomplete": "Fill in Gmail account, app password and recipient for built-in sending.",
+      "imap_required": "Choose the mailbox, or turn off email alerts."
+    },
+    "abort": {
+      "no_imap": "Set up the IMAP integration for the mailbox receiving Skridsko alerts first.",
+      "already_configured": "Skridsko is already configured.",
+      "reauth_successful": "Login updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Skridsko – settings",
+        "data": {
+          "email_enabled": "Send email",
+          "email_to": "To email address",
+          "email_service": "Send email via (notify service)",
+          "push_enabled": "Push notification to phone",
+          "push_services": "Phones",
+          "push_only_skateable": "Only push when ice is reported skateable",
+          "max_images": "Max images per alert",
+          "keepalive_min": "Check Skridsko – shortest interval",
+          "keepalive_max": "Check Skridsko – longest interval",
+          "smtp_user": "Gmail account that sends",
+          "smtp_password": "App password for that account",
+          "include_map": "Include map in email",
+          "use_email": "Also react instantly to Skridsko alert emails (optional)",
+          "imap_entry": "Mailbox (IMAP integration)"
+        },
+        "data_description": {
+          "email_to": "Empty = recipient configured in the notify service.",
+          "email_service": "E.g. an SMTP notify service. Images are embedded.",
+          "push_services": "Your mobile_app devices.",
+          "keepalive_min": "Each check is one view of the observation list, which both finds new observations and keeps the login alive. New random delay between shortest and longest, plus up to 40 seconds.",
+          "smtp_user": "Only used with built-in Gmail sending. Create an app password at myaccount.google.com → Security → App passwords.",
+          "include_map": "Map image from Kartverket with a marker, plus links to Norgeskart and Google Maps.",
+          "use_email": "Without email, new observations arrive with the next check (max ~20 min). With email they arrive within seconds. Requires the IMAP integration."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The key does not give access. Log in to tur.skridsko.net and copy PHPSESSID again.",
+      "cannot_connect": "Could not reach tur.skridsko.net.",
+      "email_service_required": "Choose a notify service for email.",
+      "push_device_required": "Choose at least one phone.",
+      "max_below_min": "Longest interval must be at least the shortest.",
+      "smtp_incomplete": "Fill in Gmail account, app password and recipient for built-in sending.",
+      "imap_required": "Choose the mailbox, or turn off email alerts."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "logged_in": {
+        "name": "Logged in"
+      }
+    },
+    "sensor": {
+      "last_observation": {
+        "name": "Last observation"
+      },
+      "status": {
+        "name": "Status"
+      },
+      "next_check": {
+        "name": "Next check"
+      },
+      "sent_today": {
+        "name": "Alerts sent today"
+      }
+    },
+    "image": {
+      "last_image": {
+        "name": "Last image"
+      }
+    },
+    "button": {
+      "check_login": {
+        "name": "Check for new observations now"
+      },
+      "resend_last": {
+        "name": "Resend last observation"
+      }
+    },
+    "switch": {
+      "notifications": {
+        "name": "Notifications enabled"
+      }
+    }
+  }
+}

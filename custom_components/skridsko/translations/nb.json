@@ -1,0 +1,143 @@
+{
+  "config": {
+    "flow_title": "Skridsko ({count} observasjoner)",
+    "step": {
+      "user": {
+        "title": "Skridsko isobservasjoner – innlogging",
+        "description": "Integrasjonen ser jevnlig etter nye isobservasjoner i interesseområdet ditt på tur.skridsko.net og sender dem videre med bilder og kart.\n\nPHPSESSID: logg inn på tur.skridsko.net i Chrome → F12 → Application → Cookies → tur.skridsko.net.",
+        "data": {
+          "phpsessid": "Innloggingsnøkkel (PHPSESSID)"
+        }
+      },
+      "delivery": {
+        "title": "Levering",
+        "data": {
+          "email_enabled": "Send e-post",
+          "email_to": "Til e-postadresse",
+          "email_service": "Send e-post via (varslingstjeneste)",
+          "push_enabled": "Push-varsel til mobil",
+          "push_services": "Mobilenheter",
+          "push_only_skateable": "Bare push når isen er meldt åkbar",
+          "max_images": "Maks bilder per varsel",
+          "keepalive_min": "Sjekk Skridsko – korteste intervall",
+          "keepalive_max": "Sjekk Skridsko – lengste intervall",
+          "smtp_user": "Gmail-konto som sender",
+          "smtp_password": "App-passord for den kontoen",
+          "include_map": "Ta med kart i e-posten",
+          "use_email": "Reager også straks på Skridskos e-postvarsler (valgfritt)",
+          "imap_entry": "E-postkonto (IMAP-integrasjon)"
+        },
+        "data_description": {
+          "email_to": "Tom = mottakeren som er satt i varslingstjenesten.",
+          "email_service": "F.eks. en SMTP-varsling (notify.gmail). Bildene legges inn i e-posten.",
+          "push_services": "Mobile_app-enhetene dine.",
+          "keepalive_min": "Hver sjekk er én visning av observasjonslista, som både finner nye observasjoner og holder innloggingen i live. Ny tilfeldig ventetid mellom korteste og lengste, pluss opptil 40 sekunder.",
+          "smtp_user": "Brukes bare med «Innebygd Gmail-sending». Lag app-passord på myaccount.google.com → Sikkerhet → App-passord.",
+          "include_map": "Kartbilde fra Kartverket med markør, og lenker til Norgeskart og Google Maps.",
+          "use_email": "Uten e-post kommer nye observasjoner med neste sjekk (maks ca. 20 min). Med e-post kommer de i løpet av sekunder. Krever IMAP-integrasjonen."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Skridsko-innloggingen har gått ut",
+        "description": "Logg inn på tur.skridsko.net på nytt og lim inn den nye nøkkelen. {pending} varsel venter i kø og blir sendt så snart innloggingen virker.",
+        "data": {
+          "phpsessid": "Ny PHPSESSID"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Nøkkelen gir ikke tilgang. Logg inn på tur.skridsko.net og kopier PHPSESSID på nytt.",
+      "cannot_connect": "Fikk ikke kontakt med tur.skridsko.net.",
+      "email_service_required": "Velg hvilken tjeneste e-posten skal sendes via.",
+      "push_device_required": "Velg minst én mobil.",
+      "max_below_min": "Lengste intervall må være minst like langt som korteste.",
+      "smtp_incomplete": "Fyll inn Gmail-konto, app-passord og til-adresse for innebygd sending.",
+      "imap_required": "Velg e-postkontoen, eller slå av e-postvarsler."
+    },
+    "abort": {
+      "no_imap": "Sett opp IMAP-integrasjonen for e-postkontoen som får Skridsko-varslene først.",
+      "already_configured": "Skridsko er allerede satt opp.",
+      "reauth_successful": "Innloggingen er oppdatert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Skridsko – innstillinger",
+        "data": {
+          "email_enabled": "Send e-post",
+          "email_to": "Til e-postadresse",
+          "email_service": "Send e-post via (varslingstjeneste)",
+          "push_enabled": "Push-varsel til mobil",
+          "push_services": "Mobilenheter",
+          "push_only_skateable": "Bare push når isen er meldt åkbar",
+          "max_images": "Maks bilder per varsel",
+          "keepalive_min": "Sjekk Skridsko – korteste intervall",
+          "keepalive_max": "Sjekk Skridsko – lengste intervall",
+          "smtp_user": "Gmail-konto som sender",
+          "smtp_password": "App-passord for den kontoen",
+          "include_map": "Ta med kart i e-posten",
+          "use_email": "Reager også straks på Skridskos e-postvarsler (valgfritt)",
+          "imap_entry": "E-postkonto (IMAP-integrasjon)"
+        },
+        "data_description": {
+          "email_to": "Tom = mottakeren som er satt i varslingstjenesten.",
+          "email_service": "F.eks. en SMTP-varsling (notify.gmail). Bildene legges inn i e-posten.",
+          "push_services": "Mobile_app-enhetene dine.",
+          "keepalive_min": "Hver sjekk er én visning av observasjonslista, som både finner nye observasjoner og holder innloggingen i live. Ny tilfeldig ventetid mellom korteste og lengste, pluss opptil 40 sekunder.",
+          "smtp_user": "Brukes bare med «Innebygd Gmail-sending». Lag app-passord på myaccount.google.com → Sikkerhet → App-passord.",
+          "include_map": "Kartbilde fra Kartverket med markør, og lenker til Norgeskart og Google Maps.",
+          "use_email": "Uten e-post kommer nye observasjoner med neste sjekk (maks ca. 20 min). Med e-post kommer de i løpet av sekunder. Krever IMAP-integrasjonen."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Nøkkelen gir ikke tilgang. Logg inn på tur.skridsko.net og kopier PHPSESSID på nytt.",
+      "cannot_connect": "Fikk ikke kontakt med tur.skridsko.net.",
+      "email_service_required": "Velg hvilken tjeneste e-posten skal sendes via.",
+      "push_device_required": "Velg minst én mobil.",
+      "max_below_min": "Lengste intervall må være minst like langt som korteste.",
+      "smtp_incomplete": "Fyll inn Gmail-konto, app-passord og til-adresse for innebygd sending.",
+      "imap_required": "Velg e-postkontoen, eller slå av e-postvarsler."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "logged_in": {
+        "name": "Innlogget"
+      }
+    },
+    "sensor": {
+      "last_observation": {
+        "name": "Siste observasjon"
+      },
+      "status": {
+        "name": "Status"
+      },
+      "next_check": {
+        "name": "Neste sjekk"
+      },
+      "sent_today": {
+        "name": "Varsler sendt i dag"
+      }
+    },
+    "image": {
+      "last_image": {
+        "name": "Siste bilde"
+      }
+    },
+    "button": {
+      "check_login": {
+        "name": "Se etter nye observasjoner nå"
+      },
+      "resend_last": {
+        "name": "Send siste observasjon på nytt"
+      }
+    },
+    "switch": {
+      "notifications": {
+        "name": "Varsler aktivert"
+      }
+    }
+  }
+}

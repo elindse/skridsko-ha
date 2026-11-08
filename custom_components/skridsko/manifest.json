@@ -1,0 +1,13 @@
+{
+  "domain": "skridsko",
+  "name": "Skridsko isobservasjoner",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["http"],
+  "after_dependencies": ["frontend", "imap", "notify", "smtp", "mobile_app"],
+  "documentation": "https://tur.skridsko.net/skridskonet/isobservationer/",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.3.0"
+}
