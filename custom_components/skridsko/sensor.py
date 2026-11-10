@@ -29,14 +29,14 @@ class LastObservation(SkridskoEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         last = self.hub.last or {}
-        keys = ("id", "title", "region", "short_status", "method", "level", "color", "skateable",
+        keys = ("id", "title", "region", "kommune", "place", "label", "short_status", "method", "level", "color", "skateable",
                 "isinfo", "comment", "reporter", "time", "url", "images", "local_images", "map_image", "map_links",
                 "received", "channels")
         attrs = {k: last.get(k) for k in keys}
         if last.get("lat") is not None:  # gjør at observasjonen vises på kartkort i HA
             attrs["latitude"], attrs["longitude"] = last["lat"], last["lon"]
         attrs["history"] = [
-            {k: h.get(k) for k in ("id", "name", "short_status", "color", "time", "received", "url")}
+            {k: h.get(k) for k in ("id", "name", "place", "short_status", "color", "time", "received", "url")}
             for h in self.hub.data.get("history", [])[1:]
         ]
         return attrs

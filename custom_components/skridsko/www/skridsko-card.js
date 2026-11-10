@@ -80,7 +80,7 @@ class SkridskoCard extends HTMLElement {
       <ha-card>
         ${pic ? `<a class="pic" href="${this._esc(a.url)}" target="_blank" rel="noopener" style="background-image:url('${pic}')" aria-label="Åpne observasjonen">${n > 1 ? `<span class="count">${n} bilder</span>` : ""}</a>` : ""}
         <div class="body">
-          <div class="head"><h2>${this._esc(s.state)}</h2><span class="muted">${this._esc(this._when(a.received))}</span></div>
+          <div class="head"><h2>${a.place ? `<span class="muted" style="font-size:16px">[${this._esc(a.place)}]</span> ` : ""}${this._esc(s.state)}</h2><span class="muted">${this._esc(this._when(a.received))}</span></div>
           <div class="chips">
             ${chip(a.short_status, a.color || "#757575", "#fff")}
             ${a.isinfo ? chip(a.isinfo, "var(--secondary-background-color)", "var(--primary-text-color)") : ""}
@@ -95,7 +95,7 @@ class SkridskoCard extends HTMLElement {
         ${hist.length ? `<div class="hist"><div class="muted" style="padding:6px 0">Tidligere</div>
           ${hist.map((h) => `<a class="row" href="${this._esc(h.url)}" target="_blank" rel="noopener">
             <span class="dot" style="background:${h.color || "#9e9e9e"}"></span>
-            <span class="name">${this._esc(h.name)}</span>
+            <span class="name">${h.place ? `<span class="muted">[${this._esc(h.place)}]</span> ` : ""}${this._esc(h.name)}</span>
             <span class="muted">${this._esc(this._when(h.received))}</span></a>`).join("")}
         </div>` : ""}
       </ha-card>`;

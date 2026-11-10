@@ -10,6 +10,7 @@ import math
 import re
 
 KARTVERKET_TILE = "https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png"
+KOMMUNE_URL = "https://ws.geonorge.no/kommuneinfo/v1/punkt?nord={lat}&ost={lon}&koordsys=4258"
 OSM_TILE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
 # GRS80

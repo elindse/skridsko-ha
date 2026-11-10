@@ -9,9 +9,11 @@ import random
 from datetime import datetime, timedelta
 from typing import Any
 
+import aiohttp
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.aiohttp_client import async_create_clientsession, async_get_clientsession
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.storage import Store
@@ -26,7 +28,7 @@ from .const import (
     DOMAIN, EVENT_OBSERVATION, HISTORY_LEN, IMAGE_DIR, JITTER_MAX_SECONDS, OBS_URL,
     SIGNAL_UPDATE, STORAGE_VERSION, CONF_USE_EMAIL, effective_options,
 )
-from .geo import KARTVERKET_TILE, OSM_TILE, compose_map, tiles_needed
+from .geo import KARTVERKET_TILE, KOMMUNE_URL, OSM_TILE, compose_map, tiles_needed
 from .parser import NotLoggedIn, Observation, ids_from_email
 
 _LOGGER = logging.getLogger(__name__)
@@ -243,6 +245,7 @@ class SkridskoHub:
                 _LOGGER.error("Skridsko: kunne ikke hente observasjon %s: %s", obs_id, err)
                 return
             await self._set_logged_in(True)
+            obs.kommune = await self._kommune(obs)
             files = await self._download_images(obs)
             map_file = await self._make_map(obs)
             channels = await self._deliver(obs, files, map_file)
@@ -265,7 +268,7 @@ class SkridskoHub:
             await self._save()
             await self._mark_imap_seen(uid)
             self.hass.bus.async_fire(EVENT_OBSERVATION, {
-                "entry_id": self.entry.entry_id, "id": obs.id, "name": obs.name,
+                "entry_id": self.entry.entry_id, "id": obs.id, "name": obs.name, "kommune": obs.place,
                 "status": obs.short_status, "level": obs.level, "skateable": obs.skateable,
                 "images": len(obs.images), "channels": channels, "url": obs.url,
             })
@@ -278,6 +281,32 @@ class SkridskoHub:
     async def async_resend_last(self) -> None:
         if self.last:
             await self.async_process(self.last["id"], force=True)
+
+    # ---------- kommune ----------
+    async def _kommune(self, obs: Observation) -> str:
+        """Kommunenavn for vannet fra Kartverket. Tom streng utenfor Norge eller ved feil."""
+        if obs.lat is None:
+            return ""
+        key = f"{obs.lat:.4f},{obs.lon:.4f}"
+        cache = self.data.setdefault("kommune_cache", {})
+        if key in cache:
+            return cache[key]
+        try:
+            session = async_get_clientsession(self.hass)
+            async with session.get(KOMMUNE_URL.format(lat=obs.lat, lon=obs.lon),
+                                   timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                if resp.status == 404:  # punktet ligger ikke i en norsk kommune
+                    name = ""
+                else:
+                    resp.raise_for_status()
+                    name = (await resp.json(content_type=None)).get("kommunenavn") or ""
+        except Exception as err:
+            _LOGGER.debug("Skridsko: kommuneoppslag feilet for %s: %s", key, err)
+            return ""
+        if len(cache) > 500:
+            cache.clear()
+        cache[key] = name
+        return name
 
     # ---------- bilder ----------
     async def _download_images(self, obs: Observation) -> list[str]:
@@ -360,7 +389,7 @@ class SkridskoHub:
                         f'<a href="{links["norgeskart"]}">Åpne i Norgeskart</a> · '
                         f'<a href="{links["google"]}">Google Maps</a></p>')
         body = f"""<div style="font-family:Arial,sans-serif;max-width:640px">
-<h2 style="margin:0 0 6px">{esc(obs.name)} <span style="font-weight:normal;color:#666">[{esc(obs.region)}]</span></h2>
+<h2 style="margin:0 0 6px">{f'<span style="font-weight:normal;color:#666">[{esc(obs.place)}]</span> ' if obs.place else ""}{esc(obs.name)}</h2>
 <p style="margin:0 0 12px"><span style="background:{obs.color};color:#fff;padding:2px 8px;border-radius:4px">{esc(obs.short_status)}</span> &nbsp;{esc(obs.method)}</p>
 {f"<p style='margin:0 0 6px'><b>Isinfo:</b> {esc(obs.isinfo)}</p>" if obs.isinfo else ""}
 {f"<p style='margin:0 0 12px'><b>Kommentar:</b> {esc(obs.comment)}</p>" if obs.comment else ""}
@@ -369,9 +398,9 @@ class SkridskoHub:
 <p style="color:#666;font-size:13px">{esc(obs.reporter)} · {esc(obs.time)} · nr. {obs.id}</p>
 <p><a href="{obs.url}">Åpne observasjonen på Skridskonätet</a></p></div>"""
         text = "\n".join(x for x in [
-            obs.title, obs.status, f"Isinfo: {obs.isinfo}" if obs.isinfo else "",
+            obs.label, obs.status, f"Isinfo: {obs.isinfo}" if obs.isinfo else "",
             f"Kommentar: {obs.comment}" if obs.comment else "", f"{obs.reporter} – {obs.time}", obs.url] if x)
-        subject = f"❄️ {obs.title}: {obs.short_status}"
+        subject = f"{obs.label}: {obs.short_status}"
         if o[CONF_EMAIL_SERVICE] == BUILTIN_SMTP:
             await self.hass.async_add_executor_job(
                 _smtp_send, o[CONF_SMTP_USER], o[CONF_SMTP_PASSWORD], o[CONF_EMAIL_TO], subject, text, body,
@@ -396,7 +425,7 @@ class SkridskoHub:
         if obs.images:
             data["image"] = obs.images[0]
         await self.hass.services.async_call(
-            "notify", svc, {"title": f"{obs.name}: {obs.short_status}", "message": msg[:300], "data": data},
+            "notify", svc, {"title": f"{obs.label}: {obs.short_status}", "message": msg[:300], "data": data},
             blocking=True)
 
     async def _notify_text(self, title: str, message: str) -> None:

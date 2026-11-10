@@ -27,6 +27,7 @@ class Observation:
     images: list[str] = field(default_factory=list)
     lat: float | None = None
     lon: float | None = None
+    kommune: str = ""
 
     @property
     def links(self) -> dict[str, str]:
@@ -40,6 +41,16 @@ class Observation:
     def region(self) -> str:
         m = re.search(r"\[(.*?)\]", self.title)
         return m.group(1) if m else ""
+
+    @property
+    def place(self) -> str:
+        """Kommunenavn fra Kartverket, ellers Skridskos egen region."""
+        return self.kommune or self.region
+
+    @property
+    def label(self) -> str:
+        """«[Lom] Langtjønna» – brukes i e-postemne, push og på kortet."""
+        return f"[{self.place}] {self.name}" if self.place else self.name
 
     @property
     def short_status(self) -> str:
@@ -60,7 +71,7 @@ class Observation:
 
     def as_dict(self) -> dict:
         d = asdict(self)
-        d.update(name=self.name, region=self.region, short_status=self.short_status,
+        d.update(name=self.name, region=self.region, place=self.place, label=self.label, short_status=self.short_status,
                  method=self.method, color=self.color, skateable=self.skateable,
                  map_links=self.links)
         return d
