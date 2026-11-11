@@ -67,7 +67,10 @@ class SkridskoHub:
         self.data.setdefault("history", [])
         self.data.setdefault("pending", [])
         self.data.setdefault("sent_log", [])
-        self.data.setdefault("notifications_enabled", True)
+        # eldre versjoner hadde én felles bryter – den bestemmer startverdien for begge
+        old = self.data.pop("notifications_enabled", True)
+        self.data.setdefault("email_on", old)
+        self.data.setdefault("push_on", old)
         self.data.setdefault("login_warned", False)
         self._unsubs.append(self.hass.bus.async_listen("imap_content", self._on_imap))
         # første sjekk kort tid etter oppstart, deretter tilfeldig
@@ -95,11 +98,18 @@ class SkridskoHub:
         return self.data["history"][0] if self.data.get("history") else None
 
     @property
-    def notifications_enabled(self) -> bool:
-        return self.data.get("notifications_enabled", True)
+    def email_configured(self) -> bool:
+        return bool(self.opts[CONF_EMAIL_ENABLED] and self.opts[CONF_EMAIL_SERVICE])
 
-    async def async_set_notifications(self, enabled: bool) -> None:
-        self.data["notifications_enabled"] = enabled
+    @property
+    def push_configured(self) -> bool:
+        return bool(self.opts[CONF_PUSH_ENABLED] and self.opts[CONF_PUSH_SERVICES])
+
+    def channel_on(self, channel: str) -> bool:
+        return self.data.get(f"{channel}_on", True)
+
+    async def async_set_channel(self, channel: str, enabled: bool) -> None:
+        self.data[f"{channel}_on"] = enabled
         await self._save()
         self._update()
 
@@ -352,16 +362,14 @@ class SkridskoHub:
         return None
 
     async def _deliver(self, obs: Observation, files: list[str], map_file: str | None = None) -> list[str]:
-        if not self.notifications_enabled:
-            return []
         o, sent = self.opts, []
-        if o[CONF_EMAIL_ENABLED] and o[CONF_EMAIL_SERVICE]:
+        if self.email_configured and self.channel_on("email"):
             try:
                 await self._send_email(obs, files, map_file)
                 sent.append("e-post")
             except Exception as err:
                 _LOGGER.error("Skridsko: e-post feilet: %s", err)
-        if o[CONF_PUSH_ENABLED] and o[CONF_PUSH_SERVICES] and (obs.skateable or not o[CONF_PUSH_ONLY_SKATEABLE]):
+        if self.push_configured and self.channel_on("push") and (obs.skateable or not o[CONF_PUSH_ONLY_SKATEABLE]):
             for svc in o[CONF_PUSH_SERVICES]:
                 try:
                     await self._send_push(svc, obs)

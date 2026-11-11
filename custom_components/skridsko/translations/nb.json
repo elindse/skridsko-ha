@@ -135,8 +135,11 @@
       }
     },
     "switch": {
-      "notifications": {
-        "name": "Varsler aktivert"
+      "email_notifications": {
+        "name": "E-postvarsler"
+      },
+      "push_notifications": {
+        "name": "Push-varsler"
       }
     }
   }

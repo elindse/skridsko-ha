@@ -26,7 +26,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         hass.http.register_static_path(CARD_URL, str(path), False)
     try:
         from homeassistant.components.frontend import add_extra_js_url
-        add_extra_js_url(hass, f"{CARD_URL}?v=0.4.0")
+        add_extra_js_url(hass, f"{CARD_URL}?v=0.5.0")
     except Exception as err:  # frontend ikke lastet
         _LOGGER.debug("Kunne ikke registrere kortet automatisk: %s", err)
     return True

@@ -6,7 +6,7 @@ Integrasjonen ser jevnlig etter nye isobservasjoner i interesseområdet ditt på
 
 - **Oppsett i UI:** innloggingsnøkkel, e-post og/eller push, antall bilder, kart og hvor ofte Skridsko sjekkes.
 - **Reparer-varsel** når innloggingen går ut. Du limer inn ny nøkkel der, og alt som har kommet i mellomtiden blir sendt etterpå.
-- **Entiteter:** Innlogget, Siste observasjon (med alle detaljer og koordinater som attributter), Status, Neste sjekk, Varsler sendt i dag, Siste bilde, knappene «Se etter nye observasjoner nå» og «Send siste observasjon på nytt», og bryteren «Varsler aktivert».
+- **Entiteter:** Innlogget, Siste observasjon (med alle detaljer og koordinater som attributter), Status, Neste sjekk, Varsler sendt i dag, Siste bilde, knappene «Se etter nye observasjoner nå» og «Send siste observasjon på nytt», og bryterne «E-postvarsler» og «Push-varsler», som slår hver kanal av/på uten å endre oppsettet.
 - **Dashbordkort:** `custom:skridsko-card` registreres automatisk.
 - **Kart:** kartbilde fra Kartverket med markør i e-posten, lenker til Norgeskart og Google Maps. Observasjonen kan også vises på kartkort i Home Assistant.
 - **Loggbok:** hvert varsel, og når innloggingen går ut eller virker igjen.

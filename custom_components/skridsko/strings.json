@@ -135,8 +135,11 @@
       }
     },
     "switch": {
-      "notifications": {
-        "name": "Notifications enabled"
+      "email_notifications": {
+        "name": "Email notifications"
+      },
+      "push_notifications": {
+        "name": "Push notifications"
       }
     }
   }
